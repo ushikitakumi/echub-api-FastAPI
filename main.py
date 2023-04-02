@@ -129,7 +129,7 @@ async def scrape_rakuma(keyword: str, browser):
         url = await a_tag.get_attribute("href")
         name = await img_tag.get_attribute("alt")
         price = await price_tag.text_content()
-        image = await img_tag.get_attribute("src")
+        image = await img_tag.get_attribute("data-original")
 
         products.append({"url": url, "name": name, "price": price, "image": image})
 
