@@ -28,9 +28,14 @@ async def scrape_products(keyword: str):
         results = await asyncio.gather(*tasks)
         await browser.close()
 
-    json = sum(results, [])
+    interleaved_results = []
+    max_items = max(len(r) for r in results)
+    for i in range(max_items):
+        for r in results:
+            if i < len(r):
+                interleaved_results.append(r[i])
 
-    return JSONResponse(content=json)
+    return JSONResponse(content=interleaved_results)
 
 async def scrape_mercari(keyword: str, browser):
     url = f"https://jp.mercari.com/search?keyword={keyword}&status=on_sale"
@@ -52,7 +57,7 @@ async def scrape_mercari(keyword: str, browser):
         price = await thumbnail_tag.get_attribute("price")
         image = await thumbnail_tag.get_attribute("src")
 
-        products.append({"url": url, "name": name, "price": price, "image": image})
+        products.append({"url": url, "name": name, "price": price, "image": image, "site": "メルカリ"})
 
     await context.close()
 
@@ -77,7 +82,7 @@ async def scrape_yahoo(keyword: str, browser):
         price = await a_tag.get_attribute("data-auction-price")
         image = await a_tag.get_attribute("data-auction-img")
 
-        products.append({"url": url, "name": name, "price": price, "image": image})
+        products.append({"url": url, "name": name, "price": price, "image": image, "site": "ヤフオク"})
 
     await context.close()
 
@@ -104,7 +109,7 @@ async def scrape_paypay_fleamarket(keyword: str, browser):
         price = await price_tag.text_content()
         image = await img_tag.get_attribute("src")
 
-        products.append({"url": url, "name": name, "price": price, "image": image})
+        products.append({"url": url, "name": name, "price": price, "image": image, "site": "ペイペイフリマ"})
 
     await context.close()
 
@@ -131,7 +136,7 @@ async def scrape_rakuma(keyword: str, browser):
         price = await price_tag.text_content()
         image = await img_tag.get_attribute("data-original")
 
-        products.append({"url": url, "name": name, "price": price, "image": image})
+        products.append({"url": url, "name": name, "price": price, "image": image, "site": "ラクマ"})
 
     await context.close()
 
