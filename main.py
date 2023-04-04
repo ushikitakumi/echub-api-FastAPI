@@ -22,7 +22,7 @@ async def scrape_products(keyword: str):
         tasks = [
             scrape_mercari(keyword, browser),
             scrape_yahoo(keyword, browser),
-            scrape_paypay_fleamarket(keyword, browser),
+            # scrape_paypay_fleamarket(keyword, browser),
             scrape_rakuma(keyword, browser),
         ]
         results = await asyncio.gather(*tasks)
@@ -144,4 +144,4 @@ async def scrape_rakuma(keyword: str, browser):
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8000)
