@@ -141,7 +141,3 @@ async def scrape_rakuma(keyword: str, browser):
     await context.close()
 
     return products
-
-
-if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
