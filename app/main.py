@@ -15,6 +15,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.get("/hello")
+def read_root():
+    return {"Hello": "World"}
+
 @app.get("/api/{keyword}")
 async def scrape_products(keyword: str):
     async with async_playwright() as p:

@@ -1,0 +1,19 @@
+version: "3.9"
+
+services:
+  fastapi:
+    build: .
+    image: echub:latest
+    expose:
+      - "8000"
+    command: uvicorn main:app --host 0.0.0.0 --port 8000
+
+  nginx:
+    image: nginx:stable-alpine
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - /etc/nginx/certs:/etc/nginx/certs
+    depends_on:
+      - fastapi
+    ports:
+      - "443:443"
