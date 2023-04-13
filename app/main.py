@@ -15,10 +15,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get("/hello")
-def read_root():
-    return {"Hello": "World"}
-
 @app.get("/api/{keyword}")
 async def scrape_products(keyword: str):
     async with async_playwright() as p:
@@ -26,8 +22,7 @@ async def scrape_products(keyword: str):
         tasks = [
             scrape_mercari(keyword, browser),
             scrape_yahoo(keyword, browser),
-            # scrape_paypay_fleamarket(keyword, browser),
-            scrape_rakuma(keyword, browser),
+            scrape_paypay_fleamarket(keyword, browser),
         ]
         results = await asyncio.gather(*tasks)
         await browser.close()
@@ -114,33 +109,6 @@ async def scrape_paypay_fleamarket(keyword: str, browser):
         image = await img_tag.get_attribute("src")
 
         products.append({"url": url, "name": name, "price": price, "image": image, "site": "ペイペイフリマ"})
-
-    await context.close()
-
-    return products
-
-async def scrape_rakuma(keyword: str, browser):
-    url = f"https://fril.jp/s?query={keyword}"
-    context = await browser.new_context()
-    page = await context.new_page()
-
-    await page.goto(url)
-    await page.wait_for_selector("div[class='item']")
-
-    products = []
-
-    items_list = await page.query_selector_all("div[class='item']")
-    for item in items_list:
-        a_tag = await item.query_selector("a[class='link_search_image']")
-        img_tag = await item.query_selector("img[class='img-responsive lazy']")
-        price_tag = await item.query_selector("span[itemprop='price']")
-
-        url = await a_tag.get_attribute("href")
-        name = await img_tag.get_attribute("alt")
-        price = await price_tag.text_content()
-        image = await img_tag.get_attribute("data-original")
-
-        products.append({"url": url, "name": name, "price": price, "image": image, "site": "ラクマ"})
 
     await context.close()
 
