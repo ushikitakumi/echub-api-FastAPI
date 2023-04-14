@@ -42,7 +42,13 @@ async def scrape_mercari(keyword: str, browser):
     page = await context.new_page()
     
     await page.goto(url)
-    await page.wait_for_selector("li[data-testid='item-cell']")
+
+    try:
+        await page.wait_for_selector("li[data-testid='item-cell']", timeout=3000)
+    except Exception:
+        await context.close()
+        return []
+
 
     products = []
 
@@ -68,7 +74,12 @@ async def scrape_yahoo(keyword: str, browser):
     page = await context.new_page()
 
     await page.goto(url)
-    await page.wait_for_selector("li[class='Product']")
+
+    try:
+        await page.wait_for_selector("li[class='Product']", timeout=3000)
+    except Exception:
+        await context.close()
+        return []
 
     products = []
 
@@ -89,16 +100,21 @@ async def scrape_yahoo(keyword: str, browser):
 
 
 async def scrape_paypay_fleamarket(keyword: str, browser):
-    url = f"https://paypayfleamarket.yahoo.co.jp/search/{keyword}"
+    url = f"https://paypayfleamarket.yahoo.co.jp/search/{keyword}?open=1"
     context = await browser.new_context()
     page = await context.new_page()
 
     await page.goto(url)
-    await page.wait_for_selector("a[class='sc-6dae2d2e-0 jRXEcC']")
+    
+    try:
+        await page.wait_for_selector("a[class='sc-519108dd-0 hPIhyh']", timeout=3000)
+    except Exception:
+        await context.close()
+        return []
 
     products = []
 
-    items_list = await page.query_selector_all("a[class='sc-6dae2d2e-0 jRXEcC']")
+    items_list = await page.query_selector_all("a[class='sc-519108dd-0 hPIhyh']")
     for item in items_list:
         img_tag = await item.query_selector("img[loading='lazy']")
         price_tag = await item.query_selector("p")
