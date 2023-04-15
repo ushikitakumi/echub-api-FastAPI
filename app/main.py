@@ -44,7 +44,7 @@ async def scrape_mercari(keyword: str, browser):
     await page.goto(url)
 
     try:
-        await page.wait_for_selector("li[data-testid='item-cell']", timeout=3000)
+        await page.wait_for_selector("li[data-testid='item-cell']", timeout=4000)
     except Exception:
         await context.close()
         return []
@@ -76,7 +76,7 @@ async def scrape_yahoo(keyword: str, browser):
     await page.goto(url)
 
     try:
-        await page.wait_for_selector("li[class='Product']", timeout=3000)
+        await page.wait_for_selector("li[class='Product']", timeout=4000)
     except Exception:
         await context.close()
         return []
@@ -107,7 +107,7 @@ async def scrape_paypay_fleamarket(keyword: str, browser):
     await page.goto(url)
     
     try:
-        await page.wait_for_selector("a[class='sc-519108dd-0 hPIhyh']", timeout=3000)
+        await page.wait_for_selector("a[class='sc-519108dd-0 hPIhyh']", timeout=4000)
     except Exception:
         await context.close()
         return []
@@ -119,7 +119,7 @@ async def scrape_paypay_fleamarket(keyword: str, browser):
         img_tag = await item.query_selector("img[loading='lazy']")
         price_tag = await item.query_selector("p")
 
-        url = await item.get_attribute("href")
+        url = "https://paypayfleamarket.yahoo.co.jp" + await item.get_attribute("href")
         name = await img_tag.get_attribute("alt")
         price = await price_tag.text_content()
         image = await img_tag.get_attribute("src")
