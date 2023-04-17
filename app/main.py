@@ -24,15 +24,16 @@ app.add_middleware(
 async def scrape_products(keyword: str):
     async with async_playwright() as p:
         browser = await p.chromium.launch()
-        tasks = [
+        results = await asyncio.gather(
             scrape_mercari(keyword, browser),
             scrape_yahoo(keyword, browser),
             scrape_paypay_fleamarket(keyword, browser),
-        ]
-        results = await asyncio.gather(*tasks)
+        )
         await browser.close()
 
     interleaved_results = []
+
+    # 商品の並べ替え
     max_items = max(len(r) for r in results)
     for i in range(max_items):
         for r in results:
