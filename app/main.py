@@ -23,7 +23,7 @@ app.add_middleware(
 @app.get("/api/{keyword}")
 async def scrape_products(keyword: str):
     async with async_playwright() as p:
-        browser = await p.chromium.launch()
+        browser = await p.chromium.launch(headless=True)
         results = await asyncio.gather(
             scrape_mercari(keyword, browser),
             scrape_yahoo(keyword, browser),
