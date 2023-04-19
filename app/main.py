@@ -61,7 +61,7 @@ async def scrape_mercari(keyword: str, browser):
         img_tag = await item.query_selector("img")
 
         url = "https://jp.mercari.com" + await a_tag.get_attribute("href")
-        name = await name_tag.get_attribute("item-name")
+        name = await name_tag.text_content()
         price = await price_tag.text_content()
         image = await img_tag.get_attribute("src")
 
