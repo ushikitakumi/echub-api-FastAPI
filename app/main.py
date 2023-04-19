@@ -50,7 +50,7 @@ async def scrape_mercari(keyword: str, browser):
     await page.goto(url)
 
     try:
-        await page.wait_for_selector("li[data-testid='item-cell']", timeout=4000)
+        await page.wait_for_selector("li[data-testid='item-cell']", timeout=000)
     except Exception:
         await context.close()
         return []
@@ -61,12 +61,14 @@ async def scrape_mercari(keyword: str, browser):
     items_list = await page.query_selector_all("li[data-testid='item-cell']")
     for item in items_list:
         a_tag = await item.query_selector("a")
-        thumbnail_tag = await item.query_selector("mer-item-thumbnail")
+        name_tag = await item.query_selector("span[data-testid='thumbnail-item-name']")
+        price_tag = await item.query_selector("span[class='number__7458af93']")
+        img_tag = await item.query_selector("img")
 
         url = "https://jp.mercari.com" + await a_tag.get_attribute("href")
-        name = await thumbnail_tag.get_attribute("item-name")
-        price = await thumbnail_tag.get_attribute("price")
-        image = await thumbnail_tag.get_attribute("src")
+        name = await name_tag.get_attribute("item-name")
+        price = await price_tag.text_content()
+        image = await img_tag.get_attribute("src")
 
         products.append({"url": url, "name": name, "price": price, "image": image, "site": "メルカリ"})
 
@@ -82,7 +84,7 @@ async def scrape_yahoo(keyword: str, browser):
     await page.goto(url)
 
     try:
-        await page.wait_for_selector("li[class='Product']", timeout=4000)
+        await page.wait_for_selector("li[class='Product']", timeout=5000)
     except Exception:
         await context.close()
         return []
@@ -113,14 +115,14 @@ async def scrape_paypay_fleamarket(keyword: str, browser):
     await page.goto(url)
     
     try:
-        await page.wait_for_selector("a[class='sc-519108dd-0 hPIhyh']", timeout=4000)
+        await page.wait_for_selector("a[class='sc-2c57c820-0 cKafv']", timeout=10000)
     except Exception:
         await context.close()
         return []
 
     products = []
 
-    items_list = await page.query_selector_all("a[class='sc-519108dd-0 hPIhyh']")
+    items_list = await page.query_selector_all("a[class='sc-2c57c820-0 cKafv']")
     for item in items_list:
         img_tag = await item.query_selector("img[loading='lazy']")
         price_tag = await item.query_selector("p")
