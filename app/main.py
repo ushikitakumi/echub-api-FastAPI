@@ -45,7 +45,7 @@ async def scrape_mercari(keyword: str, browser):
     await page.goto(url)
 
     try:
-        await page.wait_for_selector("li[data-testid='item-cell']", timeout=5000)
+        await page.wait_for_selector("li[data-testid='item-cell']", timeout=20000)
     except Exception:
         await context.close()
         return []
