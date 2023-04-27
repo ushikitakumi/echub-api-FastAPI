@@ -26,16 +26,17 @@ async def scrape_products(keyword: str):
         )
         await browser.close()
 
-    interleaved_results = []
+    sorted_results = []
 
     # 商品の並べ替え
     max_items = max(len(r) for r in results)
     for i in range(max_items):
         for r in results:
             if i < len(r):
-                interleaved_results.append(r[i])
+                sorted_results.append(r[i])
 
-    return JSONResponse(content=interleaved_results)
+    return JSONResponse(content=sorted_results)
+
 
 async def scrape_mercari(keyword: str, browser):
     url = f"https://jp.mercari.com/search?keyword={keyword}&status=on_sale"
