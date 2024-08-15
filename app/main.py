@@ -63,12 +63,15 @@ async def scrape_mercari(keyword: str, browser):
     for item in items_list:
         a_tag = await item.query_selector("a")
         name_tag = await item.query_selector("span[data-testid='thumbnail-item-name']")
-        price_tag = await item.query_selector("span[class='number__7458af93']")
+        price_tag = await item.query_selector("span[class='number__6b270ca7']")
         img_tag = await item.query_selector("img")
+
+        if (a_tag == None or name_tag == None or price_tag == None or img_tag == None):
+            break
 
         url = "https://jp.mercari.com" + await a_tag.get_attribute("href")
         name = await name_tag.text_content()
-        price = await price_tag.text_content()
+        price = await price_tag.text_content() + "円"
         image = await img_tag.get_attribute("src")
 
         products.append({"url": url, "name": name, "price": price, "image": image, "site": "メルカリ"})
@@ -96,9 +99,12 @@ async def scrape_yahoo(keyword: str, browser):
     for item in items_list:
         a_tag = await item.query_selector("a")
 
+        if (a_tag == None):
+            break
+
         url = await a_tag.get_attribute("href")
         name = await a_tag.get_attribute("data-auction-title")
-        price = await a_tag.get_attribute("data-auction-price")
+        price = await a_tag.get_attribute("data-auction-price") + "円"
         image = await a_tag.get_attribute("data-auction-img")
 
         products.append({"url": url, "name": name, "price": price, "image": image, "site": "ヤフオク"})
@@ -109,24 +115,27 @@ async def scrape_yahoo(keyword: str, browser):
 
 
 async def scrape_paypay_fleamarket(keyword: str, browser):
-    url = f"https://paypayfleamarket.yahoo.co.jp/search/{keyword}?open=1"
+    url = f"https://paypayfleamarket.yahoo.co.jp/search/{keyword}?page=1"
     context = await browser.new_context()
     page = await context.new_page()
 
     await page.goto(url)
     
     try:
-        await page.wait_for_selector("a[class='sc-2c57c820-0 cKafv']", timeout=10000)
+        await page.wait_for_selector("a[class='sc-776687b6-0 kRccgt']", timeout=10000)
     except Exception:
         await context.close()
         return []
 
     products = []
 
-    items_list = await page.query_selector_all("a[class='sc-2c57c820-0 cKafv']")
+    items_list = await page.query_selector_all("a[class='sc-776687b6-0 kRccgt']")
     for item in items_list:
         img_tag = await item.query_selector("img[loading='lazy']")
         price_tag = await item.query_selector("p")
+
+        if (price_tag == None or img_tag == None):
+            break
 
         url = "https://paypayfleamarket.yahoo.co.jp" + await item.get_attribute("href")
         name = await img_tag.get_attribute("alt")
