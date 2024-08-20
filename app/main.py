@@ -7,10 +7,10 @@ from playwright.async_api import async_playwright
 
 app = FastAPI()
 
-origins = {
+origins = [
     "http://localhost:3000",
     "https://www.echub.net/",
-}
+]
 
 app.add_middleware(
     CORSMiddleware,
