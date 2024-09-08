@@ -9,7 +9,7 @@ app = FastAPI()
 
 origins = [
     "http://localhost:3000",
-    "https://www.echub.net/",
+    "https://www.echub.net",
 ]
 
 app.add_middleware(
